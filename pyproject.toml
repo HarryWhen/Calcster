@@ -8,4 +8,5 @@ version = "0.1.0"
 description = "Web resource with collection of calculators"
 authors = [{name = "HarryWhen"}]
 dependencies = [
+    "fastapi==0.117.1",
 ]
