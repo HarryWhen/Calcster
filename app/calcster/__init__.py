@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request
 
 from . import oneoperationcalc, simplecalc
 
-router = APIRouter(prefix="/calc")
+router = APIRouter(prefix="/calcster")
 router.include_router(oneoperationcalc.router)
 router.include_router(simplecalc.router)
 
