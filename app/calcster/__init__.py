@@ -15,6 +15,6 @@ def get_calc_list(request: Request) -> list[str]:
         return str(request.url_for(endpoint.__name__))
 
     return [
-        url_for(oneoperationcalc.get_calc),
-        url_for(simplecalc.get_calc),
+        url_for(oneoperationcalc.get_entry),
+        url_for(simplecalc.get_entry),
     ]

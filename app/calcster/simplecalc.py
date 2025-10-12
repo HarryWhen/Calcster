@@ -6,6 +6,10 @@ from pydantic import BaseModel
 router = APIRouter(prefix="/simple")
 
 
+class SimpleInfo(BaseModel):
+    pass
+
+
 class ExprDTO(BaseModel):
     expr: str
     url_arg: str
@@ -16,6 +20,11 @@ def make_expr_dto(expr: str) -> ExprDTO:
 
 
 @router.get("/")
+def get_entry() -> SimpleInfo:
+    return SimpleInfo()
+
+
+@router.get("/calc")
 def get_calc(expr: str) -> int | float:
     return eval(expr)
 
