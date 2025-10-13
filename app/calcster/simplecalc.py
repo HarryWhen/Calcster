@@ -1,7 +1,11 @@
+from operator import add, mul, sub, truediv
+from typing import Callable, Optional
 from urllib.parse import quote
 
 from fastapi import APIRouter
 from pydantic import BaseModel
+
+from app.infra.chain import ChainWithDefaultHandler as Chain
 
 router = APIRouter(prefix="/simple")
 
@@ -26,7 +30,33 @@ def get_entry() -> SimpleInfo:
 
 @router.get("/calc")
 def get_calc(expr: str) -> int | float:
-    return eval(expr)
+    def handle_operator(
+        sign: str, op: Callable[[int | float, int | float], int | float]
+    ) -> Callable[[str], Optional[int | float]]:
+        def calc(expr: str) -> Optional[int | float]:
+            l_term, *terms = expr.split(sign)
+            if terms:
+                acc = get_calc(l_term)
+                for term in terms:
+                    acc = op(acc, get_calc(term))
+                return acc
+            return None
+
+        return calc
+
+    def handle_value(expr: str) -> int | float:
+        value = float(expr)
+        return int(expr) if value.is_integer() else value
+
+    chain = (
+        Chain[[str], int | float](handle_value)
+        | handle_operator("+", add)
+        | handle_operator("-", sub)
+        | handle_operator("*", mul)
+        | handle_operator("/", truediv)
+    )
+
+    return chain(expr)
 
 
 @router.get("/add")
