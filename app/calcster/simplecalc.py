@@ -14,6 +14,34 @@ class SimpleInfo(BaseModel):
     pass
 
 
+def handle_operator(
+    sign: str, op: Callable[[int | float, int | float], int | float]
+) -> Callable[[str], Optional[int | float]]:
+    def calc(expr: str) -> Optional[int | float]:
+        l_term, *terms = expr.split(sign)
+        if terms:
+            acc = get_calc(l_term)
+            for term in terms:
+                acc = op(acc, get_calc(term))
+            return acc
+        return None
+
+    return calc
+
+
+def handle_value(expr: str, /) -> int | float:
+    return int(expr) if (value := float(expr)).is_integer() else value
+
+
+calc_chain = (
+    Chain(default_handler=handle_value)
+    | handle_operator("+", add)
+    | handle_operator("-", sub)
+    | handle_operator("*", mul)
+    | handle_operator("/", truediv)
+)
+
+
 class ExprDTO(BaseModel):
     expr: str
     url_arg: str
@@ -30,33 +58,7 @@ def get_entry() -> SimpleInfo:
 
 @router.get("/calc")
 def get_calc(expr: str) -> int | float:
-    def handle_operator(
-        sign: str, op: Callable[[int | float, int | float], int | float]
-    ) -> Callable[[str], Optional[int | float]]:
-        def calc(expr: str) -> Optional[int | float]:
-            l_term, *terms = expr.split(sign)
-            if terms:
-                acc = get_calc(l_term)
-                for term in terms:
-                    acc = op(acc, get_calc(term))
-                return acc
-            return None
-
-        return calc
-
-    def handle_value(expr: str) -> int | float:
-        value = float(expr)
-        return int(expr) if value.is_integer() else value
-
-    chain = (
-        Chain[[str], int | float](handle_value)
-        | handle_operator("+", add)
-        | handle_operator("-", sub)
-        | handle_operator("*", mul)
-        | handle_operator("/", truediv)
-    )
-
-    return chain(expr)
+    return calc_chain(expr)
 
 
 @router.get("/add")
