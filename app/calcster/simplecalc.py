@@ -51,7 +51,7 @@ def make_expr_dto(expr: str) -> ExprDTO:
     return ExprDTO(expr=expr, url_arg=quote(expr))
 
 
-@router.get("/")
+@router.get("/", name=__name__)
 def get_entry() -> SimpleInfo:
     return SimpleInfo()
 

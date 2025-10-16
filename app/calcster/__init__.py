@@ -1,6 +1,8 @@
-from typing import Callable
+from types import ModuleType
 
 from fastapi import APIRouter, Request
+
+from app import app
 
 from . import oneoperationcalc, simplecalc
 
@@ -10,11 +12,11 @@ router.include_router(simplecalc.router)
 
 
 @router.get("/")
-def get_calc_list(request: Request) -> list[str]:
-    def url_for(endpoint: Callable) -> str:
-        return str(request.url_for(endpoint.__name__))
+def get_calc_list() -> list[str]:
+    def url_for(module_with_entry: ModuleType) -> str:
+        return app.url_path_for(module_with_entry.__name__)
 
     return [
-        url_for(oneoperationcalc.get_entry),
-        url_for(simplecalc.get_entry),
+        url_for(oneoperationcalc),
+        url_for(simplecalc),
     ]

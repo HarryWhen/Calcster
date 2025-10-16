@@ -8,7 +8,7 @@ class OneOperationInfo(BaseModel):
     pass
 
 
-@router.get("/")
+@router.get("/", name=__name__)
 def get_entry() -> OneOperationInfo:
     return OneOperationInfo()
 
