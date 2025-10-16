@@ -1,6 +1,5 @@
 from operator import add, mul, sub, truediv
 from typing import Callable, Optional
-from urllib.parse import quote
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -42,15 +41,6 @@ calc_chain = (
 )
 
 
-class ExprDTO(BaseModel):
-    expr: str
-    url_arg: str
-
-
-def make_expr_dto(expr: str) -> ExprDTO:
-    return ExprDTO(expr=expr, url_arg=quote(expr))
-
-
 @router.get("/", name=__name__)
 def get_entry() -> SimpleInfo:
     return SimpleInfo()
@@ -62,20 +52,20 @@ def get_calc(expr: str) -> int | float:
 
 
 @router.get("/add")
-def get_sum(l_expr: str, r_expr: str) -> ExprDTO:
-    return make_expr_dto(f"{l_expr}+{r_expr}")
+def get_sum(l_expr: str, r_expr: str) -> str:
+    return f"{l_expr}+{r_expr}"
 
 
 @router.get("/sub")
-def get_diff(l_expr: str, r_expr: str) -> ExprDTO:
-    return make_expr_dto(f"{l_expr}-{r_expr}")
+def get_diff(l_expr: str, r_expr: str) -> str:
+    return f"{l_expr}-{r_expr}"
 
 
 @router.get("/mul")
-def get_prod(l_expr: str, r_expr: str) -> ExprDTO:
-    return make_expr_dto(f"{l_expr}*{r_expr}")
+def get_prod(l_expr: str, r_expr: str) -> str:
+    return f"{l_expr}*{r_expr}"
 
 
 @router.get("/div")
-def get_quot(l_expr: str, r_expr: str) -> ExprDTO:
-    return make_expr_dto(f"{l_expr}/{r_expr}")
+def get_quot(l_expr: str, r_expr: str) -> str:
+    return f"{l_expr}/{r_expr}"
